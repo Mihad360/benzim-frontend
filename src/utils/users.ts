@@ -1,0 +1,23 @@
+export const dummyUsers = [
+  {
+    id: "584548",
+    name: "Jane Cooper",
+    email: "abc@email.com",
+    address: "United Kingdom",
+    status: "Customer",
+  },
+  {
+    id: "584549",
+    name: "John Doe",
+    email: "john@email.com",
+    address: "United States",
+    status: "Cook",
+  },
+  {
+    id: "584550",
+    name: "Alice Smith",
+    email: "alice@email.com",
+    address: "Canada",
+    status: "Customer",
+  },
+];
