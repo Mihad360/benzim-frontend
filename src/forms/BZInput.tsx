@@ -44,7 +44,11 @@ const BZInput = ({
             disabled={disabled}
             size={size}
             className={className}
-            style={style}
+            style={{
+              ...style,
+            //   border: "none", // Removes the border
+            //   outline: "none", // Optionally remove focus outline
+            }}
             placeholder={placeholder || (label ? `Enter your ${label}` : "")}
           />
         </Form.Item>
