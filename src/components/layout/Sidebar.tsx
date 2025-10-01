@@ -1,5 +1,5 @@
 import { NavLink } from "react-router-dom";
-import { appRoutes } from "../../router/routes";
+import { sidebarNavigation } from "../../router/routes";
 import logo from "../../assets/Logo.jpg";
 
 const Sidebar = () => {
@@ -20,12 +20,13 @@ const Sidebar = () => {
 
       {/* Routes */}
       <div className="space-y-2">
-        {appRoutes.map(({ path, name, icon }) => (
+        {sidebarNavigation.map(({ path, name, icon }) => (
           <NavLink
+            style={{ fontWeight: "bold" }}
             key={path}
             to={path}
             className={linkClasses}
-            end={path === "/"}
+            end={path === "/dashboard"}
           >
             {icon} {name}
           </NavLink>

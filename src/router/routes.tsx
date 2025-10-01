@@ -5,7 +5,6 @@ import AllUsers from "../dashboard/AllUsers";
 import Earnings from "../dashboard/Earnings";
 import Settings from "../dashboard/Settings";
 import AuthLayout from "../components/layout/authentication/AuthLayout";
-
 import {
   LayoutDashboard,
   Users,
@@ -16,31 +15,52 @@ import Login from "../components/layout/authentication/Login";
 import Forgetpassword from "../components/layout/authentication/Forgetpassword";
 import OtpVerify from "../components/layout/authentication/OtpVerify";
 import ResetPassword from "../components/layout/authentication/ResetPassword";
+import Notifications from "../dashboard/Notifications";
 
-export const appRoutes = [
+// Sidebar navigation items (for display in sidebar)
+export const sidebarNavigation = [
   {
-    path: "/",
+    path: "/dashboard",
     name: "Dashboard",
-    element: <Dashboard />,
     icon: <LayoutDashboard size={18} />,
   },
   {
     path: "/dashboard/users",
     name: "All Users",
-    element: <AllUsers />,
     icon: <Users size={18} />,
   },
   {
     path: "/dashboard/earnings",
     name: "Earnings",
-    element: <Earnings />,
     icon: <DollarSign size={18} />,
   },
   {
     path: "/dashboard/settings",
     name: "Settings",
-    element: <Settings />,
     icon: <SettingsIcon size={18} />,
+  },
+];
+
+export const appRoutes = [
+  {
+    path: "/dashboard",
+    element: <Dashboard />,
+  },
+  {
+    path: "/dashboard/users",
+    element: <AllUsers />,
+  },
+  {
+    path: "/dashboard/earnings",
+    element: <Earnings />,
+  },
+  {
+    path: "/dashboard/settings",
+    element: <Settings />,
+  },
+  {
+    path: "/dashboard/notifications",
+    element: <Notifications />,
   },
 ];
 
@@ -69,7 +89,7 @@ export const authRoutes = [
 
 const routes = createBrowserRouter([
   {
-    path: "/",
+    path: "/dashboard",
     element: <MainLayout />,
     children: appRoutes.map(({ path, element }) => ({
       path,

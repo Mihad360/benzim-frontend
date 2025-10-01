@@ -140,7 +140,7 @@ const Login = () => {
               }}
             >
               <Link
-                to="/forgot-password"
+                to="/auth/forget-password"
                 style={{
                   fontSize: "13px",
                   color: "#ff4d4f",
