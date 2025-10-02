@@ -88,17 +88,17 @@ export const appRoutes = [
     path: "/dashboard/settings/privacy-policy",
     element: <PrivacyPolicy />,
   },
-  {
-    path: "/dashboard/settings/edit-terms/:id",
-    element: (
-      <TermsEditor
-        content={""}
-        onChange={function (): void {
-          throw new Error("Function not implemented.");
-        }}
-      />
-    ),
-  },
+  // {
+  //   path: "/dashboard/settings/edit-terms/:id",
+  //   element: (
+  //     <TermsEditor
+  //       content={""}
+  //       onChange={function (): void {
+  //         throw new Error("Function not implemented.");
+  //       }}
+  //     />
+  //   ),
+  // },
 ];
 
 export const authRoutes = [
