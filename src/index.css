@@ -1,1 +1,12 @@
 @import "tailwindcss";
+
+/* Override Ant Design Upload styles for circular avatar */
+.avatar-uploader .ant-upload.ant-upload-select {
+  border-radius: 50% !important;
+  overflow: hidden !important;
+}
+
+.avatar-uploader .ant-upload {
+  border-radius: 50% !important;
+  overflow: hidden !important;
+}

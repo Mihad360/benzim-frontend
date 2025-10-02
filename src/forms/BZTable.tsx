@@ -4,7 +4,7 @@ import React from "react";
 type Column<T> = {
   key: keyof T | string;
   title: string;
-  render?: (value: any, record: T) => React.ReactNode;
+  render?: (record: T) => React.ReactNode; // Change this line
 };
 
 type BZTableProps<T> = {
@@ -17,7 +17,7 @@ const BZTable = <T extends Record<string, any>>({
   data,
 }: BZTableProps<T>) => {
   return (
-    <div className="overflow-x-auto bg-white shadow rounded-md">
+    <div className="overflow-x-auto  shadow rounded-md">
       <table className="w-full border-collapse">
         <thead className="bg-[#d49256] text-white">
           <tr>
@@ -34,7 +34,7 @@ const BZTable = <T extends Record<string, any>>({
               {columns.map((col) => (
                 <td key={col.key as string} className="px-4 py-2">
                   {col.render
-                    ? col.render(row[col.key as keyof T], row)
+                    ? col.render(row) // Pass only the row
                     : (row[col.key as keyof T] as React.ReactNode)}
                 </td>
               ))}

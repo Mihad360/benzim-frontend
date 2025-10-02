@@ -22,7 +22,7 @@ const Settings = () => {
       <div className="space-y-4 mt-6">
         <Link
           to="/dashboard/settings/personal-information"
-          className="flex justify-between items-center p-4 border border-gray-300 rounded-md hover:bg-[#f8f2ec] transition duration-200"
+          className="flex justify-between items-center p-4 border border-[#d49256] rounded-md hover:bg-[#f8f2ec] transition duration-200"
         >
           <span className="text-xl">Personal Information</span>
           <p>
@@ -33,7 +33,7 @@ const Settings = () => {
         {/* Change Password link triggers the modal */}
         <button
           onClick={openChangePasswordModal}
-          className="flex justify-between items-center p-4 border border-gray-300 rounded-md hover:bg-[#f8f2ec] transition duration-200 w-full cursor-pointer"
+          className="flex justify-between items-center p-4 border border-[#d49256] rounded-md hover:bg-[#f8f2ec] transition duration-200 w-full cursor-pointer"
         >
           <span className="text-xl">Change Password</span>
           <p>
@@ -43,7 +43,7 @@ const Settings = () => {
 
         <Link
           to="/dashboard/settings/terms-condition"
-          className="flex justify-between items-center p-4 border border-gray-300 rounded-md hover:bg-[#f8f2ec] transition duration-200"
+          className="flex justify-between items-center p-4 border border-[#d49256] rounded-md hover:bg-[#f8f2ec] transition duration-200"
         >
           <span className="text-xl">Terms & Condition</span>
           <p>
@@ -53,7 +53,7 @@ const Settings = () => {
 
         <Link
           to="/dashboard/settings/privacy-policy"
-          className="flex justify-between items-center p-4 border border-gray-300 rounded-md hover:bg-[#f8f2ec] transition duration-200"
+          className="flex justify-between items-center p-4 border border-[#d49256] rounded-md hover:bg-[#f8f2ec] transition duration-200"
         >
           <span className="text-xl">Privacy Policy</span>
           <p>
@@ -63,7 +63,7 @@ const Settings = () => {
 
         <Link
           to="/dashboard/settings/about-us"
-          className="flex justify-between items-center p-4 border border-gray-300 rounded-md hover:bg-[#f8f2ec] transition duration-200"
+          className="flex justify-between items-center p-4 border border-[#d49256] rounded-md hover:bg-[#f8f2ec] transition duration-200"
         >
           <span className="text-xl">About Us</span>
           <p>

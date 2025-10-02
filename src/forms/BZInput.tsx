@@ -12,6 +12,7 @@ type TInputProps = {
   size?: "large" | "middle" | "small";
   className?: string;
   style?: CSSProperties;
+  defaultValue?: string;
 };
 
 const BZInput = ({
@@ -23,6 +24,7 @@ const BZInput = ({
   size = "large",
   className,
   style,
+  defaultValue,
 }: TInputProps) => {
   const { control } = useFormContext(); // gets control from FormProvider
 
@@ -44,10 +46,11 @@ const BZInput = ({
             disabled={disabled}
             size={size}
             className={className}
+            defaultValue={defaultValue}
             style={{
               ...style,
-            //   border: "none", // Removes the border
-            //   outline: "none", // Optionally remove focus outline
+              //   border: "none", // Removes the border
+              //   outline: "none", // Optionally remove focus outline
             }}
             placeholder={placeholder || (label ? `Enter your ${label}` : "")}
           />

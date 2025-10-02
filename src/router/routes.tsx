@@ -16,6 +16,12 @@ import Forgetpassword from "../components/layout/authentication/Forgetpassword";
 import OtpVerify from "../components/layout/authentication/OtpVerify";
 import ResetPassword from "../components/layout/authentication/ResetPassword";
 import Notifications from "../dashboard/Notifications";
+import PersonalInformation from "../components/setting/PersonalInformation";
+import EditProfile from "../components/setting/EditProfile";
+import TermsCondition from "../components/setting/TermsCondition";
+import { TermsEditor } from "../components/Editor";
+import AboutUs from "../components/setting/AboutUs";
+import PrivacyPolicy from "../components/setting/PrivacyPolicy";
 
 // Sidebar navigation items (for display in sidebar)
 export const sidebarNavigation = [
@@ -61,6 +67,37 @@ export const appRoutes = [
   {
     path: "/dashboard/notifications",
     element: <Notifications />,
+  },
+  {
+    path: "/dashboard/settings/personal-information",
+    element: <PersonalInformation />,
+  },
+  {
+    path: "/dashboard/settings/edit-profile",
+    element: <EditProfile />,
+  },
+  {
+    path: "/dashboard/settings/terms-condition",
+    element: <TermsCondition />,
+  },
+  {
+    path: "/dashboard/settings/about-us",
+    element: <AboutUs />,
+  },
+  {
+    path: "/dashboard/settings/privacy-policy",
+    element: <PrivacyPolicy />,
+  },
+  {
+    path: "/dashboard/settings/edit-terms/:id",
+    element: (
+      <TermsEditor
+        content={""}
+        onChange={function (): void {
+          throw new Error("Function not implemented.");
+        }}
+      />
+    ),
   },
 ];
 
