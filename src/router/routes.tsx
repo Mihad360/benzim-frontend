@@ -19,7 +19,6 @@ import Notifications from "../dashboard/Notifications";
 import PersonalInformation from "../components/setting/PersonalInformation";
 import EditProfile from "../components/setting/EditProfile";
 import TermsCondition from "../components/setting/TermsCondition";
-import { TermsEditor } from "../components/Editor";
 import AboutUs from "../components/setting/AboutUs";
 import PrivacyPolicy from "../components/setting/PrivacyPolicy";
 

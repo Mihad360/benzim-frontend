@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { Button, Card, Spin, message } from "antd";
 import { useNavigate, useParams } from "react-router-dom";
 import { TermsEditor } from "../Editor";
 
@@ -15,7 +14,6 @@ const dummyTermsData: Record<string, string> = {
 export default function TermsCondition() {
   const router = useNavigate();
   const params = useParams();
-  const [messageApi, contextHolder] = message.useMessage();
   const id = params?.id as string;
 
   const [content, setContent] = useState("");
@@ -38,14 +36,14 @@ export default function TermsCondition() {
         setContent(termsText);
       } catch (error) {
         console.error("Error loading terms:", error);
-        messageApi.error("Failed to load terms and conditions");
+        alert("Failed to load terms and conditions");
       } finally {
         setLoading(false);
       }
     };
 
     fetchTermsData();
-  }, [id, messageApi]);
+  }, [id]);
 
   const handleSave = async () => {
     setSaving(true);
@@ -57,12 +55,11 @@ export default function TermsCondition() {
       console.log("Saving content for ID:", id);
       console.log("Content:", content);
 
-      messageApi.success("Terms & Conditions saved successfully!");
-
+      alert("Terms & Conditions saved successfully!");
       router("/dashboard/settings/terms-condition");
     } catch (error) {
       console.error("Error saving content:", error);
-      messageApi.error("Failed to save terms and conditions");
+      alert("Failed to save terms and conditions");
     } finally {
       setSaving(false);
     }
@@ -74,10 +71,10 @@ export default function TermsCondition() {
 
   if (loading) {
     return (
-      <Card
-        title="Edit Terms & Conditions"
-        style={{ maxWidth: 1280, margin: "0 auto" }}
-      >
+      <div className="card" style={{ maxWidth: 1280, margin: "0 auto" }}>
+        <div className="card-header">
+          <h2>Edit Terms & Conditions</h2>
+        </div>
         <div
           style={{
             minHeight: 400,
@@ -94,45 +91,50 @@ export default function TermsCondition() {
               color: "#8c8c8c",
             }}
           >
-            <Spin />
+            <div className="spinner"></div>
             <span>Loading...</span>
           </div>
         </div>
-      </Card>
+      </div>
     );
   }
 
   return (
-    <>
-      {contextHolder}
-      <Card
-        title={`Edit Terms & Conditions ${id ? `(ID: ${id})` : ""}`}
-        style={{ maxWidth: 1280, margin: "0 auto" }}
+    <div className="card" style={{ maxWidth: 1280, margin: "0 auto" }}>
+      <div className="card-header">
+        <h2>Edit Terms & Conditions {id ? `(ID: ${id})` : ""}</h2>
+      </div>
+      <div
+        className="card-body"
+        style={{ display: "flex", flexDirection: "column", gap: "16px" }}
       >
-        <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
-          <TermsEditor content={content} onChange={handleContentChange} />
+        <TermsEditor content={content} onChange={handleContentChange} />
 
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-              paddingTop: "16px",
-              borderTop: "1px solid #f0f0f0",
-            }}
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            paddingTop: "16px",
+            borderTop: "1px solid #f0f0f0",
+          }}
+        >
+          <button
+            onClick={() => router("/dashboard/settings/terms-condition")}
+            disabled={saving}
+            className="btn btn-secondary"
           >
-            <Button
-              onClick={() => router("/dashboard/settings/terms-condition")}
-              disabled={saving}
-            >
-              Cancel
-            </Button>
-            <Button type="primary" onClick={handleSave} loading={saving}>
-              {saving ? "Saving..." : "Save Changes"}
-            </Button>
-          </div>
+            Cancel
+          </button>
+          <button
+            onClick={handleSave}
+            disabled={saving}
+            className="btn btn-primary"
+          >
+            {saving ? "Saving..." : "Save Changes"}
+          </button>
         </div>
-      </Card>
-    </>
+      </div>
+    </div>
   );
 }
