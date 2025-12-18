@@ -21,6 +21,7 @@ import EditProfile from "../components/setting/EditProfile";
 import TermsCondition from "../components/setting/TermsCondition";
 import AboutUs from "../components/setting/AboutUs";
 import PrivacyPolicy from "../components/setting/PrivacyPolicy";
+import PrivateRoute from "./PrivateRoute";
 
 // Sidebar navigation items (for display in sidebar)
 export const sidebarNavigation = [
@@ -126,7 +127,11 @@ export const authRoutes = [
 const routes = createBrowserRouter([
   {
     path: "/dashboard",
-    element: <MainLayout />,
+    element: (
+      <PrivateRoute>
+        <MainLayout />
+      </PrivateRoute>
+    ),
     children: appRoutes.map(({ path, element }) => ({
       path,
       element,

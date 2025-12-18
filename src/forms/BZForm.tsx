@@ -24,7 +24,12 @@ const BZForm = ({
   resolver,
   defaultValues,
 }: TFormProps) => {
-  const formConfig: TFormConfig = {};
+  const formConfig: TFormConfig = {
+    defaultValues: {
+      email: "admin@gmail.com",
+      password: "123456",
+    },
+  };
 
   if (defaultValues) {
     formConfig["defaultValues"] = defaultValues;

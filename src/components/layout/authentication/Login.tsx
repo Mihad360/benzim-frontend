@@ -5,13 +5,29 @@ import BZInput from "../../../forms/BZInput";
 import BZForm from "../../../forms/BZForm";
 import logo from "../../../assets/Logo.jpg";
 import type { FieldValues } from "react-hook-form";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useLoginUserMutation } from "../../../services/redux/api/authApi";
+import { setToLocalStorage } from "../../../utils/token/getFromLocalStorage";
+import { toast } from "sonner";
 
 const Login = () => {
   const [showPassword, setShowPassword] = useState(false); // State to toggle password visibility
+  const [loginUser] = useLoginUserMutation();
+  const navigate = useNavigate();
 
-  const onSubmit = (data: FieldValues) => {
+  const onSubmit = async (data: FieldValues) => {
     console.log(data);
+    const userInfo = {
+      email: data.email,
+      password: data.password,
+    };
+    const res = await loginUser(userInfo);
+    console.log(res);
+    if (res) {
+      setToLocalStorage("accessToken", res.data.data.accessToken);
+      toast("Login successfull", { position: "top-right" });
+      navigate("/dashboard");
+    }
   };
 
   const inputStyle = {

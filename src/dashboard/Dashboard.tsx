@@ -1,8 +1,12 @@
 import BZTable from "../forms/BZTable";
+import { getUser } from "../hooks/authServices";
 import { dummyUsers } from "../utils/users";
 import EarningsChart from "./EarningsChart";
 
 const Dashboard = () => {
+  const user = getUser();
+  console.log(user);
+
   const columns = [
     { key: "id", title: "ID" },
     { key: "name", title: "User Name" },
