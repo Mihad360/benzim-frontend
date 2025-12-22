@@ -10,6 +10,7 @@ import {
   Users,
   DollarSign,
   Settings as SettingsIcon,
+  GitPullRequest,
 } from "lucide-react";
 import Login from "../components/layout/authentication/Login";
 import Forgetpassword from "../components/layout/authentication/Forgetpassword";
@@ -22,6 +23,7 @@ import TermsCondition from "../components/setting/TermsCondition";
 import AboutUs from "../components/setting/AboutUs";
 import PrivacyPolicy from "../components/setting/PrivacyPolicy";
 import PrivateRoute from "./PrivateRoute";
+import CookRequests from "../dashboard/CookRequests";
 
 // Sidebar navigation items (for display in sidebar)
 export const sidebarNavigation = [
@@ -34,6 +36,11 @@ export const sidebarNavigation = [
     path: "/dashboard/users",
     name: "All Users",
     icon: <Users size={18} />,
+  },
+  {
+    path: "/dashboard/cook-approvals",
+    name: "Cook Approvals",
+    icon: <GitPullRequest size={18} />,
   },
   {
     path: "/dashboard/earnings",
@@ -55,6 +62,10 @@ export const appRoutes = [
   {
     path: "/dashboard/users",
     element: <AllUsers />,
+  },
+  {
+    path: "/dashboard/cook-approvals",
+    element: <CookRequests />,
   },
   {
     path: "/dashboard/earnings",

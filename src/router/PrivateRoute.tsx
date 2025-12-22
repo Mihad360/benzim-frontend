@@ -1,5 +1,7 @@
-import Loading from "../components/loading/Loading";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { useEffect, useState } from "react";
 import { Navigate, useLocation } from "react-router-dom";
+import Loading from "../components/loading/Loading";
 import { getUser } from "../hooks/authServices";
 import type { JSX } from "react";
 
@@ -8,23 +10,35 @@ interface PrivateRouteProps {
 }
 
 const PrivateRoute = ({ children }: PrivateRouteProps) => {
-  const user = getUser();
-  console.log(user);
   const location = useLocation();
 
-  if (user === undefined || user === null) {
+  const [user, setUser] = useState<any | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    setLoading(true); // user is coming → show loading
+
+    const authUser = getUser(); // sync or async
+    setUser(authUser ?? null);
+
+    setLoading(false); // auth checked
+  }, []);
+
+  // ⏳ While checking
+  if (loading) {
     return (
-      <div className="text-center py-72">
+      <div>
         <Loading />
       </div>
     );
   }
 
+  // ❌ Checked & no user
   if (!user) {
-    return <Navigate to="/login" state={{ from: location }} replace />;
+    return <Navigate to="/auth/login" state={{ from: location }} replace />;
   }
 
-  // 3️⃣ Authenticated
+  // ✅ User exists
   return children;
 };
 

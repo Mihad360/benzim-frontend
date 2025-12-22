@@ -37,25 +37,27 @@ const UserDetailsModal = ({
           <div className="grid grid-cols-1 gap-3">
             <div className="flex justify-between border-b pb-2">
               <span className="font-medium text-gray-700">User ID:</span>
-              <span className="text-gray-900">{user.id}</span>
+              <span className="text-gray-900">{user?.id}</span>
             </div>
 
             <div className="flex justify-between border-b pb-2">
               <span className="font-medium text-gray-700">Status:</span>
               <span
                 className={`px-2 py-1 rounded-full text-xs font-medium ${
-                  user.status === "Customer"
+                  user.role === "cook"
                     ? "bg-blue-100 text-blue-800"
                     : "bg-green-100 text-green-800"
                 }`}
               >
-                {user.status}
+                {user.role}
               </span>
             </div>
 
             <div className="flex justify-between border-b pb-2">
-              <span className="font-medium text-gray-700">Address:</span>
-              <span className="text-gray-900 text-right">{user.address}</span>
+              <span className="font-medium text-gray-700">Phone Number:</span>
+              <span className="text-gray-900 text-right">
+                {user.phoneNumber}
+              </span>
             </div>
 
             <div className="flex justify-between border-b pb-2">
@@ -70,7 +72,7 @@ const UserDetailsModal = ({
               Account Information
             </h4>
             <div className="text-sm text-gray-600 space-y-1">
-              <p>• Registered as {user.status.toLowerCase()}</p>
+              <p>• Registered as {user.role.toLowerCase()}</p>
               <p>• Active account</p>
               <p>• Can place and receive orders</p>
             </div>

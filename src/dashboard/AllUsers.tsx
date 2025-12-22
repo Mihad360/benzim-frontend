@@ -2,16 +2,18 @@
 import { Search } from "lucide-react";
 import { useState } from "react";
 import BZForm from "../forms/BZForm";
-import { dummyUsers } from "../utils/users";
 import BZSelect from "../forms/BZSelect";
 import BZInput from "../forms/BZInput";
 import BZTable from "../forms/BZTable";
 import UserDetailsModal from "../components/modal/UserDetailsModal";
+import { useAllUsersQuery } from "../services/redux/api/usersApi";
+import Loading from "../components/loading/Loading";
 
 const AllUsers = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState<any>(null);
-
+  const { data: usersData, isLoading } = useAllUsersQuery(undefined);
+  const users = usersData?.data || [];
   const handleViewProfile = (user: any) => {
     setSelectedUser(user);
     setModalOpen(true);
@@ -23,11 +25,11 @@ const AllUsers = () => {
   };
 
   const columns = [
-    { key: "id", title: "ID" },
+    // { key: "id", title: "ID" },
     { key: "name", title: "User Name" },
     { key: "email", title: "Email" },
-    { key: "address", title: "Address" },
-    { key: "status", title: "Status" },
+    { key: "phoneNumber", title: "Phone Number" },
+    { key: "role", title: "Role" },
     {
       key: "action",
       title: "Action",
@@ -47,6 +49,14 @@ const AllUsers = () => {
     },
   ];
 
+  if (isLoading) {
+    return (
+      <div>
+        <Loading />
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
       {/* Orange Header Bar */}
@@ -59,8 +69,7 @@ const AllUsers = () => {
         <div className="flex justify-between items-center">
           {/* Left: Count */}
           <h3 className="text-lg font-medium">
-            All users{" "}
-            <span className="text-gray-600">({dummyUsers.length})</span>
+            All users <span className="text-gray-600">({users?.length})</span>
           </h3>
 
           {/* Right: Filters */}
@@ -70,8 +79,8 @@ const AllUsers = () => {
               placeholder="All Users"
               options={[
                 { label: "All Users", value: "" },
-                { label: "Customer", value: "Customer" },
-                { label: "Cook", value: "Cook" },
+                { label: "Cook", value: "cook" },
+                { label: "Users", value: "user" },
               ]}
               style={{ width: "300px" }}
               className="[&_.ant-select-selector]:!h-[40px] [&_.ant-select-selector]:!rounded-[17px] [&_.ant-select-selector]:!border-[#d49256]"
@@ -104,7 +113,7 @@ const AllUsers = () => {
       </BZForm>
 
       {/* Table */}
-      <BZTable columns={columns} data={dummyUsers} />
+      <BZTable columns={columns} data={users} />
 
       {/* User Details Modal */}
       <UserDetailsModal
