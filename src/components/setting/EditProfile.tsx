@@ -4,19 +4,79 @@ import BZInput from "../../forms/BZInput";
 import { Controller, type FieldValues } from "react-hook-form";
 import logo from "../../assets/Logo.jpg";
 import { SwitchCamera } from "lucide-react";
+import {
+  useEditProfileMutation,
+  useGetMeQuery,
+} from "../../services/redux/api/usersApi";
+import Loading from "../loading/Loading";
+import Swal from "sweetalert2";
+import { toast } from "sonner";
 
 export default function EditProfile() {
-  const userData = {
-    name: "Chelofer",
-    email: "alkhahlaksalkgkgalk@hmail.com",
-    phoneNumber: "3000597212",
-    profileImage: "https://www.w3schools.com/w3images/avatar2.png",
-    countryCode: "+1242",
+  const { data: userData, isLoading } = useGetMeQuery(undefined);
+  const [editProfile] = useEditProfileMutation();
+  const me = userData?.data || {};
+
+  const onSubmit = async (datas: FieldValues) => {
+    console.log(datas);
+    // Show confirmation dialog first
+    const result = await Swal.fire({
+      title: "Edit profile?",
+      text: "This action will approve the update.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#16a34a",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, Save",
+    });
+
+    if (!result.isConfirmed) return;
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { email, profileImage, ...otherData } = datas;
+
+    console.log("Form data:", datas);
+    console.log("Other data:", otherData);
+    console.log("Profile image:", profileImage);
+
+    // ✅ Build FormData
+    const formData = new FormData();
+
+    // Append other data fields as JSON string in 'data' field
+    formData.append("data", JSON.stringify(otherData));
+
+    // Append image ONLY if it's a File
+    if (profileImage instanceof File) {
+      formData.append("image", profileImage);
+    }
+    // Log FormData contents
+    console.log("📦 FormData contents:");
+    // eslint-disable-next-line prefer-const
+    for (let [key, value] of formData.entries()) {
+      console.log(`  ${key}:`, value);
+    }
+    try {
+      const res = await editProfile(formData);
+
+      console.log("Response:", res.data);
+
+      if (res.data?.success) {
+        toast.success("Profile edited successfully", { duration: 3000 });
+      } else {
+        toast.error(res.data?.message || "Something went wrong");
+      }
+    } catch (error) {
+      console.error("Edit profile error:", error);
+      toast.error("Failed to update profile");
+    }
   };
 
-  const onSubmit = (data: FieldValues) => {
-    console.log(data);
-  };
+  if (isLoading) {
+    return (
+      <div>
+        <Loading />
+      </div>
+    );
+  }
 
   return (
     <div>
@@ -32,7 +92,15 @@ export default function EditProfile() {
           </div>
 
           <div className="bg-[#f5f5f5] p-8">
-            <BZForm onSubmit={onSubmit}>
+            <BZForm
+              onSubmit={onSubmit}
+              defaultValues={{
+                name: me?.name,
+                email: me?.email,
+                phoneNumber: me?.phoneNumber,
+                // profileImg: me?.profileImage,
+              }}
+            >
               <div className="flex gap-8">
                 {/* Profile Section */}
                 <div className="flex-shrink-0">
@@ -40,7 +108,7 @@ export default function EditProfile() {
                     <div className="flex flex-col items-center">
                       <div className="relative mb-4">
                         <Controller
-                          name="profileImg"
+                          name="profileImage"
                           render={({
                             field: { onChange, value, ...field },
                           }) => (
@@ -68,8 +136,8 @@ export default function EditProfile() {
                                 ) : (
                                   <div className="flex flex-col items-center justify-center h-full rounded-full">
                                     <img
-                                      src={logo}
-                                      alt="default avatar"
+                                      src={me.profileImage}
+                                      alt={logo}
                                       className="w-full h-full object-cover rounded-full"
                                     />
                                     <div className="absolute inset-0 bg-black bg-opacity-40 rounded-full flex flex-col items-center justify-center opacity-50 hover:opacity-100 transition-opacity">
@@ -102,7 +170,7 @@ export default function EditProfile() {
                     <BZInput
                       type="text"
                       name="name"
-                      defaultValue={userData.name}
+                      // defaultValue={me.name}
                       style={{
                         width: "100%", // Full width
                         borderRadius: "8px", // Rounded corners
@@ -123,9 +191,12 @@ export default function EditProfile() {
                       E-mail
                     </label>
                     <BZInput
-                      type="text"
                       name="email"
-                      defaultValue={userData.email}
+                      type="text"
+                      // value={me.email}
+                      readOnly
+                      disabled
+                      // defaultValue={me.email}
                       style={{
                         width: "100%", // Full width
                         borderRadius: "8px", // Rounded corners
@@ -147,15 +218,13 @@ export default function EditProfile() {
                     </label>
                     <div className="flex gap-2">
                       <div className="flex items-center gap-2 rounded-lg border-2 border-[#e8a870] bg-white px-4 py-2">
-                        <span className="text-2xl">🇺🇸</span>
-                        <span className="text-gray-800">
-                          {userData.countryCode}
-                        </span>
+                        <span className="text-2xl">CH</span>
+                        <span className="text-gray-800">+41</span>
                       </div>
                       <BZInput
                         type="text"
                         name="phoneNumber"
-                        defaultValue={userData.phoneNumber}
+                        // defaultValue={me.phoneNumber}
                         style={{
                           width: "100%", // Full width
                           borderRadius: "8px", // Rounded corners

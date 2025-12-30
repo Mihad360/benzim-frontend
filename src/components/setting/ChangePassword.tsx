@@ -7,6 +7,9 @@ import { CustomModal } from "../modal/CustomModal";
 import { EyeInvisibleOutlined, EyeOutlined } from "@ant-design/icons";
 import { useState } from "react";
 import ForgetPassword from "./ForgetPassword";
+import { useChangePasswordMutation } from "../../services/redux/api/authApi";
+import Swal from "sweetalert2";
+import { toast } from "sonner";
 
 type ChangePasswordModalProps = {
   open: boolean;
@@ -23,6 +26,7 @@ const ChangePassword = ({ open, onCancel }: ChangePasswordModalProps) => {
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [isActive, setIsActive] = useState(false);
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const [changePassword] = useChangePasswordMutation();
 
   const openChangePasswordModal = () => {
     setIsModalVisible(true); // Open the modal
@@ -36,9 +40,34 @@ const ChangePassword = ({ open, onCancel }: ChangePasswordModalProps) => {
     setPasswordVisible(!passwordVisible);
   };
 
-  const onSubmit: SubmitHandler<any> = (data) => {
+  const onSubmit: SubmitHandler<any> = async (data) => {
     console.log(data);
-    onCancel();
+    const result = await Swal.fire({
+      title: "Edit profile?",
+      text: "This action will approve the update.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#16a34a",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, Save",
+    });
+
+    if (!result.isConfirmed) return;
+    const toastId = toast.loading("Loading");
+
+    const res = await changePassword(data);
+    if (res.data.success) {
+      toast.success("Change password successfully", {
+        duration: 3000,
+        id: toastId,
+      });
+    } else if (!res.data.success) {
+      toast.error(res.data.message || "Password incorrect", {
+        duration: 4000,
+        id: toastId,
+      });
+    }
+    // onCancel();
   };
 
   const handleMouseDown = () => {
@@ -73,8 +102,8 @@ const ChangePassword = ({ open, onCancel }: ChangePasswordModalProps) => {
           <div className="relative mb-4">
             <BZInput
               style={inputStyle}
-              name="oldPassword"
-              label="old Password"
+              name="currentPassword"
+              label="Current Password"
               type={passwordVisible ? "text" : "password"}
             />
             <span
@@ -91,22 +120,6 @@ const ChangePassword = ({ open, onCancel }: ChangePasswordModalProps) => {
               style={inputStyle}
               name="newPassword"
               label="new Password"
-              type={passwordVisible ? "text" : "password"}
-            />
-            <span
-              className="absolute right-3 top-8 cursor-pointer text-lg"
-              onClick={togglePasswordVisibility}
-            >
-              {passwordVisible ? <EyeOutlined /> : <EyeInvisibleOutlined />}
-            </span>
-          </div>
-
-          {/* Confirm Password */}
-          <div className="relative mb-2">
-            <BZInput
-              style={inputStyle}
-              name="confirmPassword"
-              label="again new Password"
               type={passwordVisible ? "text" : "password"}
             />
             <span

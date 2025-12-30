@@ -19,8 +19,7 @@ export const axiosBaseQuery =
     unknown,
     unknown
   > =>
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  async ({ url, method, data, params, headers, contentType }) => {
+  async ({ url, method, data, params, contentType }) => {
     try {
       const result = await axiosInstance({
         url: baseUrl + url,

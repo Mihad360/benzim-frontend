@@ -20,7 +20,50 @@ const authApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ["auth"],
     }),
+    forgetPassord: build.mutation({
+      query: (data) => ({
+        url: "/auth/forget-password",
+        method: "POST",
+        contentType: "application/json",
+        data,
+      }),
+      invalidatesTags: ["auth"],
+    }),
+    verifyOtp: build.mutation({
+      query: (data) => ({
+        url: "/auth/verify-otp",
+        method: "POST",
+        contentType: "application/json",
+        data,
+      }),
+      invalidatesTags: ["auth"],
+    }),
+    resetPassword: build.mutation({
+      query: (data) => ({
+        url: "/auth/reset-password",
+        method: "POST",
+        contentType: "application/json",
+        data,
+      }),
+      invalidatesTags: ["auth"],
+    }),
+    changePassword: build.mutation({
+      query: (data) => ({
+        url: "/auth/change-password",
+        method: "POST",
+        contentType: "application/json",
+        data,
+      }),
+      invalidatesTags: ["auth"],
+    }),
   }),
 });
 
-export const { useLoginUserMutation, useSignUpUserMutation } = authApi;
+export const {
+  useLoginUserMutation,
+  useSignUpUserMutation,
+  useForgetPassordMutation,
+  useVerifyOtpMutation,
+  useResetPasswordMutation,
+  useChangePasswordMutation,
+} = authApi;

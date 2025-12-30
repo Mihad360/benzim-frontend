@@ -17,7 +17,7 @@ const BZTable = <T extends Record<string, any>>({
   data,
 }: BZTableProps<T>) => {
   return (
-    <div className="overflow-x-auto  shadow rounded-md">
+    <div className="overflow-x-auto  shadow rounded-md mt-5">
       <table className="w-full border-collapse">
         <thead className="bg-[#d49256] text-white">
           <tr>

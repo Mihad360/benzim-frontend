@@ -23,8 +23,12 @@ const UserDetailsModal = ({
       {user && (
         <div className="space-y-4 p-4">
           <div className="flex items-center space-x-4 mb-4">
-            <div className="w-16 h-16 bg-[#d49256] rounded-full flex items-center justify-center text-white text-lg font-bold">
-              {user.name.charAt(0)}
+            <div>
+              <img
+                className="w-16 h-16 rounded-full"
+                src={user.profileImage}
+                alt={user.name}
+              />
             </div>
             <div>
               <h3 className="text-xl font-semibold text-gray-800">

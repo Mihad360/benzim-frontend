@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Form } from "antd";
 import type { ReactNode } from "react";
+import { useEffect } from "react";
 import {
   FormProvider,
   useForm,
@@ -24,38 +25,28 @@ const BZForm = ({
   resolver,
   defaultValues,
 }: TFormProps) => {
-  const formConfig: TFormConfig = {
-    defaultValues: {
-      email: "admin@gmail.com",
-      password: "123456",
-    },
-  };
+  const methods = useForm({
+    resolver,
+  });
 
-  if (defaultValues) {
-    formConfig["defaultValues"] = defaultValues;
-  }
+  // ✅ IMPORTANT: reset form when defaultValues change
+  useEffect(() => {
+    if (defaultValues) {
+      methods.reset(defaultValues);
+    }
+  }, [defaultValues, methods]);
 
-  if (resolver) {
-    formConfig["resolver"] = resolver;
-  }
-  const methods = useForm(formConfig);
   const submit = async (data: FieldValues) => {
     await onSubmit(data);
-    methods.reset();
+    // ❌ do NOT reset after submit for edit profile
   };
 
   return (
-    <div>
-      <FormProvider {...methods}>
-        <Form
-          layout="vertical"
-          action=""
-          onFinish={methods.handleSubmit(submit)}
-        >
-          {children}
-        </Form>
-      </FormProvider>
-    </div>
+    <FormProvider {...methods}>
+      <Form layout="vertical" onFinish={methods.handleSubmit(submit)}>
+        {children}
+      </Form>
+    </FormProvider>
   );
 };
 

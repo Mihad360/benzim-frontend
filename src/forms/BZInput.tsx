@@ -13,6 +13,8 @@ type TInputProps = {
   className?: string;
   style?: CSSProperties;
   defaultValue?: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  readOnly?: boolean;
 };
 
 const BZInput = ({
@@ -25,6 +27,7 @@ const BZInput = ({
   className,
   style,
   defaultValue,
+  readOnly = false,
 }: TInputProps) => {
   const { control } = useFormContext(); // gets control from FormProvider
 
@@ -43,6 +46,7 @@ const BZInput = ({
             {...field}
             id={name}
             type={type}
+            readOnly={readOnly}
             disabled={disabled}
             size={size}
             className={className}

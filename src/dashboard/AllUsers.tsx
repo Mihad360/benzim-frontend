@@ -1,18 +1,23 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Search } from "lucide-react";
 import { useState } from "react";
-import BZForm from "../forms/BZForm";
-import BZSelect from "../forms/BZSelect";
-import BZInput from "../forms/BZInput";
 import BZTable from "../forms/BZTable";
 import UserDetailsModal from "../components/modal/UserDetailsModal";
 import { useAllUsersQuery } from "../services/redux/api/usersApi";
 import Loading from "../components/loading/Loading";
+import Swal from "sweetalert2";
+import { Input, Select } from "antd";
 
 const AllUsers = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState<any>(null);
-  const { data: usersData, isLoading } = useAllUsersQuery(undefined);
+  const [filters, setFilters] = useState<{
+    role?: string;
+    searchTerm?: string;
+  }>({});
+  const [searchValue, setSearchValue] = useState("");
+  // Pass filters as query params to Redux
+  const { data: usersData, isLoading } = useAllUsersQuery(filters);
   const users = usersData?.data || [];
   const handleViewProfile = (user: any) => {
     setSelectedUser(user);
@@ -22,6 +27,40 @@ const AllUsers = () => {
   const handleModalClose = () => {
     setModalOpen(false);
     setSelectedUser(null);
+  };
+
+  const handleUserDelete = async (data: any) => {
+    console.log(data);
+    const result = await Swal.fire({
+      title: "Approve Cook?",
+      text: "This action will approve the cook permanently.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#16a34a",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, approve",
+    });
+
+    if (!result.isConfirmed) return;
+  };
+
+  const handleRoleChange = (role: string) => {
+    setFilters((prev) => ({
+      ...prev,
+      role: role || undefined,
+    }));
+  };
+
+  // ✅ Handle search input change
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setSearchValue(value);
+
+    // Update filter as user types
+    setFilters((prev) => ({
+      ...prev,
+      searchTerm: value.trim() || undefined,
+    }));
   };
 
   const columns = [
@@ -47,6 +86,23 @@ const AllUsers = () => {
         );
       },
     },
+    {
+      key: "action2",
+      title: "Action",
+      render: (record: any) => {
+        return (
+          <button
+            className="bg-rose-500 text-white px-4 py-2 rounded-md cursor-pointer transition duration-200"
+            onClick={() => {
+              console.log("Clicked record:", record);
+              handleUserDelete(record);
+            }}
+          >
+            Delete user
+          </button>
+        );
+      },
+    },
   ];
 
   if (isLoading) {
@@ -65,52 +121,48 @@ const AllUsers = () => {
       </div>
 
       {/* Filter + Count Row */}
-      <BZForm onSubmit={() => {}}>
-        <div className="flex justify-between items-center">
-          {/* Left: Count */}
-          <h3 className="text-lg font-medium">
-            All users <span className="text-gray-600">({users?.length})</span>
-          </h3>
+      <div className="flex justify-between items-center">
+        {/* Left: Count */}
+        <h3 className="text-lg font-medium">
+          All users <span className="text-gray-600">({users?.length})</span>
+        </h3>
 
-          {/* Right: Filters */}
-          <div className="flex items-center gap-3">
-            <BZSelect
-              name="role"
-              placeholder="All Users"
-              options={[
-                { label: "All Users", value: "" },
-                { label: "Cook", value: "cook" },
-                { label: "Users", value: "user" },
-              ]}
-              style={{ width: "300px" }}
-              className="[&_.ant-select-selector]:!h-[40px] [&_.ant-select-selector]:!rounded-[17px] [&_.ant-select-selector]:!border-[#d49256]"
+        {/* Right: Filters */}
+        <div className="flex items-center gap-3">
+          {/* ✅ Direct Ant Design Select with same styling */}
+          <Select
+            placeholder="All Users"
+            onChange={handleRoleChange}
+            defaultValue=""
+            options={[
+              { label: "All Users", value: "" },
+              { label: "Cook", value: "cook" },
+              { label: "Users", value: "user" },
+            ]}
+            style={{ width: 300 }}
+            className="[&_.ant-select-selector]:!h-[40px] [&_.ant-select-selector]:!rounded-[17px] [&_.ant-select-selector]:!border-[#d49256]"
+          />
+
+          {/* ✅ Direct Ant Design Input with same styling */}
+          <div className="flex items-center relative">
+            <Input
+              placeholder="Search Name or ID"
+              value={searchValue}
+              onChange={handleSearchChange}
+              style={{
+                width: 500,
+                height: 40,
+                borderRadius: 17,
+                borderColor: "#d49256",
+                paddingRight: 48, // Make space for the search icon
+              }}
             />
-
-            <div className="flex items-center relative">
-              <BZInput
-                name="search"
-                label=""
-                type="text"
-                placeholder="Search Name or ID"
-                className="rounded-r-none"
-                style={{
-                  width: "500px",
-                  height: "40px",
-                  borderRadius: "17px",
-                  borderColor: "#d49256",
-                  marginTop: "6px",
-                }}
-              />
-              <button
-                type="submit"
-                className="bg-[#d49256] h-[40px] w-12 rounded-full flex items-center justify-center text-white absolute right-0 mt-1.5 z-10 cursor-pointer hover:bg-[#c07d45] transition duration-200"
-              >
-                <Search size={18} />
-              </button>
+            <div className="bg-[#d49256] h-[40px] w-12 rounded-full flex items-center justify-center text-white absolute right-0 pointer-events-none">
+              <Search size={18} />
             </div>
           </div>
         </div>
-      </BZForm>
+      </div>
 
       {/* Table */}
       <BZTable columns={columns} data={users} />

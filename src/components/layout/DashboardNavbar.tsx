@@ -8,6 +8,11 @@ const DashboardNavbar = () => {
   const dropdownRef = useRef<HTMLDivElement>(null); // Reference for the dropdown menu
   const profileRef = useRef<HTMLDivElement>(null); // Reference for the profile button
 
+  const handleLogout = () => {
+    localStorage.removeItem("accessToken");
+    window.location.reload();
+  };
+
   // Close the dropdown if clicked outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -67,18 +72,24 @@ const DashboardNavbar = () => {
                 &times; {/* Cross icon */}
               </button>
             </div>
-            <a href="#" className="block px-4 py-2 text-sm hover:bg-gray-100">
+            <a
+              href="/dashboard/profile"
+              className="block px-4 py-2 text-sm hover:bg-gray-100"
+            >
               Profile
             </a>
-            <a href="#" className="block px-4 py-2 text-sm hover:bg-gray-100">
+            <a
+              href="/dashboard/settings"
+              className="block px-4 py-2 text-sm hover:bg-gray-100"
+            >
               Settings
             </a>
-            <a
-              href="#"
-              className="block px-4 py-2 text-sm hover:bg-gray-100 text-red-500"
+            <button
+              onClick={handleLogout}
+              className="block px-4 cursor-pointer w-full py-2 text-sm text-left hover:bg-gray-100 text-red-500"
             >
               Logout
-            </a>
+            </button>
           </div>
         )}
       </div>
