@@ -5,10 +5,14 @@ import BZTable from "../forms/BZTable";
 import { useAllUsersQuery } from "../services/redux/api/usersApi";
 import EarningsChart from "./EarningsChart";
 import UserDetailsModal from "../components/modal/UserDetailsModal";
+import { useDashboardStatsQuery } from "../services/redux/api/earningApi";
 
 const Dashboard = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState<any>(null);
+  const { data: dashboardStats, isLoading: dashboardLoading } =
+    useDashboardStatsQuery(undefined);
+  const dashboard = dashboardStats?.data;
   const { data: usersData, isLoading } = useAllUsersQuery(undefined);
   const users = usersData?.data || [];
   console.log(users);
@@ -47,7 +51,7 @@ const Dashboard = () => {
     },
   ];
 
-  if (isLoading) {
+  if (dashboardLoading && isLoading) {
     return (
       <div>
         <Loading />
@@ -64,15 +68,15 @@ const Dashboard = () => {
       <div className="grid grid-cols-3 gap-6">
         <div className="bg-[#ebe7e4] shadow text-black p-6 rounded-md border border-gray-500">
           <h3 className="text-2xl font-semibold">Total Earnings</h3>
-          <p className="text-xl">$12030</p>
+          <p className="text-xl">${dashboard?.totalEarnings}</p>
         </div>
         <div className="bg-[#ebe7e4] shadow text-black p-6 rounded-md border border-gray-500">
           <h3 className="text-2xl font-semibold">Total Customers</h3>
-          <p className="text-xl">50</p>
+          <p className="text-xl">{dashboard?.totalUsers}</p>
         </div>
         <div className="bg-[#ebe7e4] shadow text-black p-6 rounded-md border border-gray-500">
           <h3 className="text-2xl font-semibold">Total Cooks</h3>
-          <p className="text-xl">35</p>
+          <p className="text-xl">{dashboard?.totalCooks}</p>
         </div>
       </div>
       <div>

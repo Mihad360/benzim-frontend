@@ -1,16 +1,45 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Info, Search } from "lucide-react";
 import { useState } from "react";
-import BZForm from "../forms/BZForm";
-import BZInput from "../forms/BZInput";
 import BZTable from "../forms/BZTable";
-import BZTimePicker from "../forms/BZTimePicker";
-import { salesData } from "../utils/earnings";
 import EarningsDetailsModal from "../components/modal/EarningsDetailsModal";
+import {
+  useAdminEarningsQuery,
+  useDashboardStatsQuery,
+} from "../services/redux/api/earningApi";
+import Loading from "../components/loading/Loading";
+import { Input, DatePicker, Spin } from "antd";
+import dayjs from "dayjs";
+import { useDebounce } from "../hooks/debounce.hook";
 
 const Earnings = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedEarning, setSelectedEarning] = useState<any>(null);
+  const [searchValue, setSearchValue] = useState("");
+  const [selectedDate, setSelectedDate] = useState<string | undefined>();
+
+  // ✅ Debounce search term
+  const debouncedSearch = useDebounce(searchValue, 500);
+
+  // ✅ Build filters object
+  const filters = {
+    ...(selectedDate && { date: selectedDate }),
+    ...(debouncedSearch.trim() && { searchTerm: debouncedSearch.trim() }),
+  };
+
+  const { data: dashboardStats, isLoading: dashboardLoading } =
+    useDashboardStatsQuery(undefined);
+  const {
+    data: adminEarnings,
+    isLoading,
+    isFetching,
+  } = useAdminEarningsQuery(filters);
+
+  const dashboard = dashboardStats?.data;
+  const earnings = adminEarnings?.data || [];
+
+  // ✅ Check if filters are active
+  const hasActiveFilters = selectedDate || debouncedSearch.trim();
 
   const handleViewDetails = (earning: any) => {
     setSelectedEarning(earning);
@@ -22,27 +51,34 @@ const Earnings = () => {
     setSelectedEarning(null);
   };
 
+  const handleDateChange = (date: any) => {
+    setSelectedDate(date ? dayjs(date).format("YYYY-MM-DD") : undefined);
+  };
+
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchValue(e.target.value);
+  };
+
   const columns = [
-    { key: "OrderID", title: "Order ID" },
-    { key: "SaleAmount", title: "Sale Amount" },
-    { key: "CustomerEndCommission7.5%", title: "Customer Commission" },
-    { key: "CookEndCommission7.5%", title: "Cook Commission" },
-    { key: "CommissionAmount", title: "Platform Commission" },
-    { key: "Date", title: "Date" },
+    { key: "orderNo", title: "Order NO" },
+    { key: "totalPaidByCustomer", title: "Sale Amount" },
+    { key: "cookEarnings", title: "Cook Commission" },
+    { key: "adminEarn", title: "Platform Commission" },
+    { key: "date", title: "Date" },
     {
-      key: "Status",
+      key: "status",
       title: "Status",
       render: (record: any) => (
         <span
           className={`px-2 py-1 rounded-full text-xs font-medium ${
-            record.Status === "Pending"
+            record.status === "pending"
               ? "bg-yellow-100 text-yellow-800"
-              : record.Status === "Completed"
+              : record.status === "completed"
               ? "bg-green-100 text-green-800"
               : "bg-gray-100 text-gray-800"
           }`}
         >
-          {record.Status}
+          {record.status}
         </span>
       ),
     },
@@ -60,6 +96,11 @@ const Earnings = () => {
     },
   ];
 
+  // ✅ Initial page load
+  if (dashboardLoading) {
+    return <Loading />;
+  }
+
   return (
     <div className="space-y-6">
       {/* Orange Header Bar */}
@@ -71,69 +112,109 @@ const Earnings = () => {
       <div className="grid grid-cols-3 gap-6">
         <div className="bg-[#d49256] text-white p-6 rounded-md">
           <h3 className="text-2xl font-semibold">Total Earnings</h3>
-          <p className="text-xl">$12030</p>
+          <p className="text-xl">${dashboard?.totalEarnings}</p>
         </div>
         <div className="bg-[#f6a04d] text-white p-6 rounded-md">
           <h3 className="text-2xl font-semibold">Total Customers</h3>
-          <p className="text-xl">376</p>
+          <p className="text-xl">{dashboard?.totalUsers}</p>
         </div>
         <div className="bg-[#4c9f7d] text-white p-6 rounded-md">
           <h3 className="text-2xl font-semibold">Total Cooks</h3>
-          <p className="text-xl">98</p>
+          <p className="text-xl">{dashboard?.totalCooks}</p>
         </div>
       </div>
 
       {/* Filter + Count Row */}
-      <BZForm onSubmit={() => {}}>
-        <div className="flex justify-between items-center">
-          {/* Left: Count */}
-          <h3 className="text-lg font-medium">
-            All Transactions{" "}
-            <span className="text-gray-600">({salesData.length})</span>
-          </h3>
+      <div className="flex justify-between items-center">
+        {/* Left: Count */}
+        <h3 className="text-lg font-medium">
+          All Transactions{" "}
+          <span className="text-gray-600">({earnings.length})</span>
+        </h3>
 
-          {/* Right: Filters */}
-          <div className="flex items-center gap-3">
-            {/* Date Filter */}
-            <BZTimePicker
+        {/* Right: Filters */}
+        <div className="flex items-center gap-3">
+          {/* Date Filter */}
+          <DatePicker
+            onChange={handleDateChange}
+            placeholder="Select Date"
+            format="YYYY-MM-DD"
+            style={{
+              width: 200,
+              height: 40,
+              borderRadius: 17,
+              borderColor: "#d49256",
+            }}
+            className="[&_.ant-picker-input]:!h-[40px]"
+          />
+
+          {/* Search Input with Loading Indicator */}
+          <div className="flex items-center relative">
+            <Input
+              placeholder="Search Order ID"
+              value={searchValue}
+              onChange={handleSearchChange}
               style={{
-                width: "200px",
-                height: "40px",
-                borderRadius: "17px",
+                width: 300,
+                height: 40,
+                borderRadius: 17,
                 borderColor: "#d49256",
-                marginTop: "28px",
+                paddingRight: 48,
               }}
-              name="date"
             />
-
-            <div className="flex items-center relative">
-              <BZInput
-                name="searchName"
-                label=""
-                type="text"
-                placeholder="Search Order ID"
-                className="rounded-r-none"
-                style={{
-                  width: "300px",
-                  height: "40px",
-                  borderRadius: "17px",
-                  borderColor: "#d49256",
-                  marginTop: "6px",
-                }}
-              />
-              <button
-                type="submit"
-                className="bg-[#d49256] h-[40px] w-12 rounded-full flex items-center justify-center text-white absolute right-0 mt-1.5 z-10 cursor-pointer hover:bg-[#c07d45] transition duration-200"
-              >
+            <div className="bg-[#d49256] h-[40px] w-12 rounded-full flex items-center justify-center text-white absolute right-0 pointer-events-none">
+              {isFetching ? (
+                <Spin
+                  size="small"
+                  className="[&_.ant-spin-dot-item]:bg-white"
+                />
+              ) : (
                 <Search size={18} />
-              </button>
+              )}
             </div>
           </div>
         </div>
-      </BZForm>
+      </div>
 
-      {/* Table */}
-      <BZTable columns={columns} data={salesData} />
+      {/* Table with Loading State & No Data Message */}
+      <div className="relative min-h-[300px]">
+        {isLoading ? (
+          <div className="flex items-center justify-center py-20">
+            <Spin size="large" />
+          </div>
+        ) : earnings.length === 0 ? (
+          <div className="bg-white rounded-lg shadow-sm p-12 text-center">
+            <div className="flex flex-col items-center justify-center space-y-4">
+              <div className="bg-gray-100 rounded-full p-6">
+                <Search size={48} className="text-gray-400" />
+              </div>
+              <div className="space-y-2">
+                <h3 className="text-xl font-semibold text-gray-700">
+                  No Transactions Found
+                </h3>
+                <p className="text-gray-500">
+                  {hasActiveFilters
+                    ? "No transactions match your search criteria. Try adjusting your filters."
+                    : "No transactions available at the moment."}
+                </p>
+              </div>
+              {hasActiveFilters && (
+                <button
+                  onClick={() => {
+                    setSearchValue("");
+                    setSelectedDate(undefined);
+                  }}
+                  className="mt-4 px-6 py-2 bg-[#d49256] hover:bg-[#c07d45] text-white rounded-md transition duration-200 cursor-pointer"
+                >
+                  Clear Filters
+                </button>
+              )}
+            </div>
+          </div>
+        ) : (
+          <BZTable columns={columns} data={earnings} />
+        )}
+      </div>
 
       {/* Earnings Details Modal */}
       <EarningsDetailsModal

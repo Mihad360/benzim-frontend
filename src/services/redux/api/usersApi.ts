@@ -46,8 +46,20 @@ const usersApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ["user"],
     }),
+    deleteUser: build.mutation({
+      query: (id) => ({
+        // ✅ Just accept id directly, not as object
+        url: `/users/${id}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["user"],
+    }),
   }),
 });
 
-export const { useAllUsersQuery, useEditProfileMutation, useGetMeQuery } =
-  usersApi;
+export const {
+  useAllUsersQuery,
+  useEditProfileMutation,
+  useGetMeQuery,
+  useDeleteUserMutation,
+} = usersApi;

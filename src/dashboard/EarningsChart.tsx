@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useState, useRef, useEffect } from "react";
 import { Bar } from "react-chartjs-2";
@@ -13,8 +14,10 @@ import {
 } from "chart.js";
 import { DatePicker, Space } from "antd";
 import dayjs from "dayjs";
+import { useDashboardStatsQuery } from "../services/redux/api/earningApi";
+import Loading from "../components/loading/Loading";
 
-// Register Chart.js components for Bar chart
+// Register Chart.js components
 ChartJS.register(
   CategoryScale,
   LinearScale,
@@ -25,39 +28,24 @@ ChartJS.register(
 );
 
 const EarningsChart = () => {
-  const [selectedYear, setSelectedYear] = useState<number | null>(null);
+  const [selectedYear, setSelectedYear] = useState<number>(dayjs().year());
   const chartRef = useRef<ChartJS<"bar">>(null);
 
-  const monthlyEarnings = [
-    { month: "Jan", earnings: 15000, year: 2025 },
-    { month: "Feb", earnings: 12000, year: 2025 },
-    { month: "Mar", earnings: 20000, year: 2025 },
-    { month: "Apr", earnings: 14000, year: 2025 },
-    { month: "May", earnings: 17000, year: 2025 },
-    { month: "Jun", earnings: 22000, year: 2025 },
-    { month: "Jul", earnings: 13000, year: 2025 },
-    { month: "Aug", earnings: 18000, year: 2025 },
-    { month: "Sept", earnings: 11000, year: 2025 },
-    { month: "Oct", earnings: 15000, year: 2025 },
-    { month: "Nov", earnings: 19000, year: 2025 },
-    { month: "Dec", earnings: 25000, year: 2025 },
-  ];
+  // ✅ Send year as query param
+  const { data: dashboardStats, isLoading } =
+    useDashboardStatsQuery(selectedYear);
 
-  // Filter data based on the selected year
-  const filteredData = monthlyEarnings.filter((data) => {
-    return selectedYear ? data.year === selectedYear : true;
-  });
-
+  const dashboard = dashboardStats?.data;
+  const monthlyData = dashboard?.yearlyEarnings?.monthlyData;
+  console.log(monthlyData);
   const chartData = {
-    labels: filteredData.map((data) => data.month),
+    labels: monthlyData?.map((item: any) => item.month),
     datasets: [
       {
         label: "Earnings",
-        data: filteredData.map((data) => data.earnings),
+        data: monthlyData?.map((item: any) => Number(item.earnings)), // ✅ FIX
         backgroundColor: "#d49256",
-        borderColor: "#d49256",
-        borderWidth: 1,
-        borderRadius: 4, // Optional: rounded corners for bars
+        borderRadius: 4,
         borderSkipped: false,
       },
     ],
@@ -67,14 +55,11 @@ const EarningsChart = () => {
     responsive: true,
     maintainAspectRatio: false,
     plugins: {
-      legend: {
-        position: "top" as const,
-      },
+      legend: { position: "top" },
       tooltip: {
         callbacks: {
-          label: function (context) {
-            return `Earnings: $${context.parsed.y.toLocaleString()}`;
-          },
+          label: (context) =>
+            `Earnings: $${Number(context.parsed.y).toLocaleString()}`,
         },
       },
     },
@@ -82,42 +67,42 @@ const EarningsChart = () => {
       y: {
         beginAtZero: true,
         ticks: {
-          callback: function (value) {
-            return "$" + value.toLocaleString();
-          },
+          callback: (value) => `$${Number(value).toLocaleString()}`,
         },
         title: {
           display: true,
           text: "Earnings ($)",
         },
       },
-      x: {
-        title: {
-          display: true,
-          text: "Months",
-        },
-      },
     },
   };
 
-  // Cleanup on unmount
   useEffect(() => {
     return () => {
-      if (chartRef.current) {
-        chartRef.current.destroy();
-      }
+      chartRef.current?.destroy();
     };
   }, []);
+
+  if (isLoading) {
+    return <Loading />;
+  }
+
+  if (!monthlyData?.length) {
+    return <p className="text-center">No data available</p>;
+  }
 
   return (
     <div className="space-y-6">
       <div className="flex justify-between pt-3">
         <h3 className="text-xl font-medium">Earnings</h3>
-        <Space direction="vertical" size={12}>
+
+        <Space>
           <DatePicker
             picker="year"
-            value={selectedYear ? dayjs(`${selectedYear}-01-01`) : null}
-            onChange={(date) => setSelectedYear(date ? date.year() : null)}
+            value={dayjs(`${selectedYear}-01-01`)}
+            onChange={(date) =>
+              setSelectedYear(date ? date.year() : dayjs().year())
+            }
             format="YYYY"
             style={{
               width: "200px",
@@ -128,14 +113,10 @@ const EarningsChart = () => {
           />
         </Space>
       </div>
+
       <div className="bg-white p-4 rounded-md shadow-sm">
         <div className="h-72">
-          <Bar
-            ref={chartRef}
-            data={chartData}
-            options={options}
-            key={selectedYear} // Add key to force re-render
-          />
+          <Bar ref={chartRef} data={chartData} options={options} />
         </div>
       </div>
     </div>

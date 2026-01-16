@@ -4,7 +4,7 @@ import { envConfig } from "../../../config/envConfig";
 
 export const baseApi = createApi({
   reducerPath: "api",
-  tagTypes: ["auth", "admin", "user", "cook"],
+  tagTypes: ["auth", "admin", "user", "cook", "earning"],
   baseQuery: axiosBaseQuery({
     baseUrl: envConfig.baseApi as string,
   }),
